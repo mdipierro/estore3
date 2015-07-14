@@ -2,11 +2,10 @@
 
 <div id="products"></div>
 
-
 <script id="template" type="text/ractive">
 
   <div class="shopping-cart">
-    <h4>Schopping Cart</h4>
+    <h4>Shopping Cart</h4>
     <table class="table">
       {% #cart %}
       <tr>
@@ -24,11 +23,11 @@
       </tr>
     </table>
     {% #if cart.length>0 %}
-    <a class="btn btn-primary" on-click="submit-order" href="{{URL('order_info')}}">Submit Order</a>
+    <a class="btn btn-primary" on-click="submit-order" href="{{=URL('order_info')}}">Submit Order</a>
     {% /if %}
   </div>
 
-  <button class="btn btn-info pull-right" onclick="jQuery('.shopping-cart').slideToggle()">Shopping Cart, ${% total(cart) %}</button>
+  <button class="btn btn-primary pull-right" onclick="jQuery('.shopping-cart').slideToggle()">Shopping Cart, ${% total(cart) %}</button>
 
   <center style="padding:50px">
     <form class="form-inline">
@@ -47,7 +46,11 @@
     <button type="submit" class="btn btn-primary" on-click="search">Search</button>
     </form>
   </center>
-
+  {% #if products.length==0 %}
+  <center>
+    <img src="{{=URL('static','images/cart.png')}}" style="width:400px"/>
+  </center>
+  {% /if %}
   {% #if products.length>0 %}
   <table class="table">    
     <thead>
@@ -67,7 +70,7 @@
         <td>{% qty_in_stock %}</td>
         <td>${% unit_price %}</td>
         <td>
-          <button class="btn btn-primary btn-small" on-click="buy:{% id %}">Add to Cart</button>
+          <img on-click="buy:{% id %}" src="{{=URL('static','images/to-cart.png')}}" class="to-cart">
         </td>
       </tr>
       {% #if selectedProduct==id %}
@@ -139,13 +142,14 @@
          if(MAIN.data.cart[k].id==id) {found=true; MAIN.data.cart[k].quantity_in_cart++;}
       if(!found) {product.quantity_in_cart=1; MAIN.data.cart.push(product); }
       MAIN.set('cart',MAIN.data.cart);
+      jQuery.web2py.flash('Added to Cart');
     });
     MAIN.on('search',function(event){
       event.original.preventDefault();
       var form = jQuery('form');
       MAIN.set('selectedProduct',0);
       jQuery('.product').show();  
-      jQuery.getJSON(search_products_url,jQuery(this).serialize()).done(function(data){
+      jQuery.getJSON(search_products_url,form.serialize()).done(function(data){
           var product_by_id = {};
           jQuery.web2py.enableElement(form.find('.disabled'));
           MAIN.set('products',data);

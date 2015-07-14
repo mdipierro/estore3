@@ -27,15 +27,66 @@ def search():
 
 def submit_order():
     import json
-    session.order = json.loads(request.vars.cart)
+    session.cart = json.loads(request.vars.cart)
     return 'ok'
 
 @auth.requires_login()
 def order_info():
+    if not session.cart:
+        redirect(URL('index'))
+    db.purchase_order.buyer_name.default = '%(first_name)s %(last_name)s' % auth.user
     form = SQLFORM(db.purchase_order).process()
     if form.accepted:
-        pass    
+        total_balance = 0
+        for item in session.cart:
+            item['product'] = item['id']
+            item['purchase_order'] = form.vars.id
+            del item['id']
+            db.purchase_item.insert(**item)
+            total_balance += item['unit_price']*int(item['quantity_in_cart'])
+        session.cart = None
+        db(db.purchase_order.id==form.vars.id).update(total_balance=total_balance)
+        redirect(URL('pay',args=form.vars.id, hmac_key=STRIPE_SECRET_KEY))
     return dict(form=form)
+
+def pay():
+    if not URL.verify(request, hmac_key=STRIPE_SECRET_KEY):
+        redirect(URL('index'))
+    from gluon.contrib.stripe import StripeForm
+    response.flash = None # never show a response.flash
+    order = db.purchase_order(request.args(0,cast=int))
+    if not order or order.amount_paid:
+        session.flash = 'you paid already!'
+        redirect(URL('index'))
+    amount = order.total_balance
+    description ="..."
+    form = StripeForm(
+        pk=STRIPE_PUBLISHABLE_KEY,
+        sk=STRIPE_SECRET_KEY,
+        amount=int(100*amount),
+        description=description).process()
+    if form.accepted:
+        code = '[%s/%s]' % (order.id,form.response['id'])
+        auth.settings.mailer.send(
+            to=auth.user.email,
+            subject='...',
+            message='Your payment of $%.2f has been processed %s' % (
+                amount, code))
+        order.update_record(total_balance=0,amount_paid=amount,
+                            payment_id=form.response['id'],
+                            paid_on=request.now)
+        redirect(URL('thank_you', vars=dict(code=code), hmac_key=STRIPE_SECRET_KEY))
+    elif form.errors:
+        redirect(URL('pay_error'))
+    return dict(form=form)
+
+def thank_you():
+    if not URL.verify(request, hmac_key=STRIPE_SECRET_KEY):
+        redirect(URL('index'))
+    return locals()
+
+def pay_error():
+    return locals()
 
 @auth.requires_membership('manager')
 def manage_products():

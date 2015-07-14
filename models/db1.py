@@ -24,17 +24,22 @@ db.define_table(
     Field('shipping_zip'),
     Field('shipping_state'),
     Field('shipping_country'),
-    Field('total_price','decimal(10,2)'),
-    Field('total_tax','decimal(10,2)'),
-    Field('total_tax_price_shipping','decimal(10,2)'),
-    Field('status',requires=IS_IN_SET(('submitted','shipped','received','returned'))),
+    Field('total_price','decimal(10,2)',readable=False,writable=False),
+    Field('total_tax','decimal(10,2)',readable=False,writable=False),
+    Field('total_balance','decimal(10,2)',readable=False,writable=False),
+    Field('amount_paid','decimal(10,2)',readable=False,writable=False),
+    Field('payment_id',readable=False,writable=False),
+    Field('paid_on','datetime',readable=False,writable=False),
+    Field('status',requires=IS_IN_SET(('submitted','shipped','received','returned')),
+          default='submitted',readable=False,writable=False),
     auth.signature)
 
 db.define_table(
     'purchase_item',
     Field('purchase_order','reference purchase_order'),
+    Field('product','reference product'),
     db.product, # yes we copy the product description at the moment of an order
-    Field('ordered_quantity','integer'),
+    Field('quantity_in_cart','integer'),
     auth.signature)
 
 #db(db.auth_user.id>1).delete()

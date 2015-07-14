@@ -5,7 +5,7 @@
 ## Customize your APP title, subtitle and menus here
 #########################################################################
 
-response.logo = A(B('E',SPAN('Store'),'3'),XML('&trade;&nbsp;'),
+response.logo = A(B(SPAN('3',_class="flip"),SPAN('Store'),'3'),XML('&trade;&nbsp;'),
                   _class="navbar-brand",_href=URL('default','index'))
 response.title = request.application.replace('_',' ').title()
 response.subtitle = ''

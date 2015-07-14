@@ -2,10 +2,40 @@
    height: 100px;
 }
 .shopping-cart {
-   display: none;
-   background-color: #e1e1e1;
+   display: none;   
    padding: 10px;
+   border-top: 5px solid orange;
+   border-bottom: 5px solid orange;
+}
+.to-cart {
+   width:50px;
+   cursor: pointer;
+}
+.navbar, .inverse-navbar {
+   background: orange !important;
+   border-color: white;
+}
+.navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>li>a {
+   color: white;
+}
+.navbar-inverse .navbar-brand:hover {
+   color: red;
 }
 .shopping-cart table {
    max-width: 400px;
+}
+.flip {
+  display: inline-block;
+  -moz-transform: scaleX(-1);    /* Gecko */
+  -o-transform: scaleX(-1);      /* Operah */
+  -webkit-transform: scaleX(-1); /* webkit */
+  transform: scaleX(-1);         /* standard */
+  filter: FlipH;                 /* IE 6/7/8 */
+}
+.btn-primary {
+  background: orange;
+  border: 0;
+}
+.btn-primary:hover {
+  background: red;
 }
