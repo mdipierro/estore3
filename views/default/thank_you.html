@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+
+<h1>Thank you for your payment</h1>
+<h3>We sent you an email receipt</h3>
+<h3>It will appear on your Credit Card Statement as:</h3>
+<pre>
+LINCOLN ELEMENTARY PTO
+</pre>
+{{if request.vars.code:}}
+<h3>For your record, your transaction code is:</h3>
+<pre>
+{{=request.vars.code}}
+</pre>
+{{pass}}

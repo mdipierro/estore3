@@ -32,6 +32,7 @@ db.define_table(
     Field('paid_on','datetime',readable=False,writable=False),
     Field('status',requires=IS_IN_SET(('submitted','shipped','received','returned')),
           default='submitted',readable=False,writable=False),
+    Field('notes','text'),
     auth.signature)
 
 db.define_table(
