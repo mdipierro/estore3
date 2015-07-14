@@ -1,0 +1,11 @@
+.thumbnail {
+   height: 100px;
+}
+.shopping-cart {
+   display: none;
+   background-color: #e1e1e1;
+   padding: 10px;
+}
+.shopping-cart table {
+   max-width: 400px;
+}
