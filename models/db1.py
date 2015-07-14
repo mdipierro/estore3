@@ -45,7 +45,7 @@ db.define_table(
 
 #db(db.auth_user.id>1).delete()
 #db(db.product).delete()
-if db(db.product).count()==0 and auth.user:
+if db(db.product).count()==0:
     import random
     from gluon.contrib.populate import populate
     n = 10000
